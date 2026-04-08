@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Phân loại ảnh (Flask + PyTorch)</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 40px; display:flex; justify-content:center }
+      .card { width: 640px; padding:20px; border:1px solid #ddd; border-radius:8px }
+      .result { margin-top: 20px; font-size:20px; color:#2c3e50 }
+      .error { color: #e74c3c }
+      img { max-width:100%; border-radius:6px; margin-top:10px }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Upload ảnh để phân loại</h2>
+      <form method="post" enctype="multipart/form-data">
+        <div>
+          <label>Chọn mô hình (.pt):</label>
+          <select name="model" required>
+            <option value="">-- Chọn model --</option>
+            {% for m in models %}
+              <option value="{{ m }}">{{ m }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div style="margin-top:8px">
+          <label>Kiến trúc (chỉ khi file là state_dict):</label>
+          <select name="arch">
+            <option value="">(Không cần nếu .pt là full model)</option>
+            <option value="resnet18">ResNet18</option>
+            <option value="mobilenet_v2">MobileNetV2</option>
+            <option value="custom">CustomCNN (from notebook)</option>
+          </select>
+        </div>
+        <div style="margin-top:12px">
+          <input type="file" name="file" accept="image/*" required>
+        </div>
+        <div style="margin-top:8px">
+          <label><input type="checkbox" name="multilabel" {% if multilabel %}checked{% endif %}> Multi-label (nhiều nhãn có thể đúng)</label>
+          &nbsp;&nbsp;Threshold: <input type="number" name="threshold" step="0.01" min="0" max="1" value="{{ threshold }}" style="width:80px">
+        </div>
+        <div style="margin-top:12px">
+          <button type="submit">Dự đoán</button>
+        </div>
+      </form>
+
+      {% if error %}
+        <p class="error">{{ error }}</p>
+      {% endif %}
+
+      {% if prediction %}
+        <div class="result">Kết quả: <strong>{{ prediction }}</strong></div>
+      {% endif %}
+
+      {% if used_arch %}
+        <div style="margin-top:8px; color:#555">Kiến trúc sử dụng: <strong>{{ used_arch }}</strong></div>
+      {% endif %}
+      {% if topk %}
+        <div style="margin-top:12px">
+          <strong>Top-{{ topk|length }} dự đoán:</strong>
+          <ul>
+            {% for item in topk %}
+              <li>{{ loop.index }}. {{ item.label }} — {{ '%.1f' % (item.prob * 100) }}%</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if image_url %}
+        <img src="{{ image_url }}" alt="Uploaded image">
+      {% endif %}
+    </div>
+  </body>
+</html>
