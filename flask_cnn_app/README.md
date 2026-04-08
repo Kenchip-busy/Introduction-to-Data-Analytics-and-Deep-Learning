@@ -59,7 +59,4 @@ python app.py
 
 4. Mở trình duyệt: `http://127.0.0.1:5000/` → chọn model → (nếu cần) chọn kiến trúc → upload ảnh → xem kết quả.
 
-Ghi chú:
-- Nếu bạn cung cấp `garbage_classification_model.pt`, hãy đặt nó vào `d:/lab10/flask_cnn_app/models/`.
-- Nếu file là `state_dict`, chọn kiến trúc tương ứng trong dropdown (ResNet18 hoặc MobileNetV2). Nếu kiến trúc khác, tôi có thể thêm hỗ trợ nếu bạn cho biết tên kiến trúc.
 
